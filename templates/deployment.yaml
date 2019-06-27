@@ -1,0 +1,72 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "windocks-sql-proxy.fullname" . }}
+  labels:
+    app: {{ template "windocks-sql-proxy.name" . }}
+    chart: {{ template "windocks-sql-proxy.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "windocks-sql-proxy.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "windocks-sql-proxy.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: tcp-proxy
+              containerPort: {{ .Values.sqlproxy.port }}
+              protocol: TCP
+            - name: tls-proxy
+              containerPort: {{ .Values.sqlproxy.securePort }}
+              protocol: TCP
+          envFrom:
+          - secretRef:
+              name: {{ .Values.sqlproxy.kubeSecretName }}
+          env:
+            - name: PROJECT_ID
+              value: mystical-timing-242516
+            - name: WINDOCKS_REQUIRED_HOSTNAME
+              value: "{{ .Values.sqlproxy.windocksServerHostname }}"
+            - name: WINDOCKS_OPTIONAL_PORT
+              value: "{{ .Values.sqlproxy.windocksServerPort }}"
+            - name: WINDOCKS_REQUIRED_IMAGE_NAME
+              value: "{{ .Values.sqlproxy.windocksImageName }}"
+            - name: WINDOCKS_SQL_PROXY_OPTIONAL_LISTENING_PORT
+              value: "{{ .Values.sqlproxy.port }}"
+            # - name: WINDOCKS_OPTIONAL_CONTAINER_NAME
+            #  value: "{{ .Values.sqlproxy.windocksContainerName }}"
+            # If WINDOCKS_OPTIONAL_PERSISTENT_CONTAINER_PORT is set, then the proxy will not create or delete the Windocks container. 
+            # - name: WINDOCKS_OPTIONAL_PERSISTENT_CONTAINER_PORT
+            #  value: "{{ .Values.sqlproxy.windocksPersistentContainerPort }}"
+            
+          #livenessProbe:
+            #tcpSocket:
+              #port: {{ .Values.sqlproxy.port }}
+          #readinessProbe:
+            #tcpSocket:
+              #port: {{ .Values.sqlproxy.port }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

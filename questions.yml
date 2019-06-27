@@ -1,0 +1,66 @@
+categories:
+- Database
+- SQL Server
+questions:
+- variable: image
+  default: "windocks/windocks-sql-server-proxy"
+  description: "Docker image name"
+  type: string
+  required: true
+  label: Image Name
+- variable: imageTag
+  default: "latest"
+  description: "Docker image tag"
+  type: string
+  required: true
+  label: Image Tag
+- variable: sqlproxy.windocksServerHostname
+  default: ""
+  description: "IP or hostname for Windocks server"
+  type: string
+  required: true
+  label: Windocks Server hostname
+  group: "Sqlproxy Settings"
+- variable: sqlproxy.windocksServerPort
+  default: "3000"
+  description: "Port for Windocks API"
+  type: string
+  required: false
+  label: Windocks port
+  group: "Sqlproxy Settings"
+- variable: sqlproxy.windocksImageName
+  default: ""
+  description: "Windocks image name from which Sqlproxy creates SQL Server containers and database clones"
+  type: string
+  required: true
+  label: Windocks image name
+  group: "Sqlproxy Settings"
+- variable: sqlproxy.windocksContainerName
+  default: ""
+  description: "Name to use for Windocks container created by Sqlproxy"
+  type: string
+  required: false
+- variable: sqlproxy.windocksPersistentContainerPort
+  default: ""
+  description: "Set this if you do not want Sqlproxy to create and manage the Windocks container. You must create the Windocks container using the Windocks web app or a docker client"
+  type: string
+  required: false
+  label: Pre-existing Windocks container port
+  group: "Sqlproxy Settings"
+- variable: service.port
+  default: "3087"
+  description: "Service port for access to Windocks Sql proxy"
+  type: string
+  label: Windocks SQL proxy NodePort number
+  required: true
+  group: "Sqlproxy Settings"
+- variable: service.type
+  default: "ClusterIP"
+  description: "MySQL K8s Service type"
+  type: enum
+  group: "Services and Load Balancing"
+  options:
+    - "ClusterIP"
+    - "LoadBalancer"
+  required: true
+  label: Sqlproxy Service Type
