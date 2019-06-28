@@ -2,17 +2,26 @@ categories:
 - Database
 - SQL Server
 questions:
-- variable: image
+- variable: image.repository
   default: "windocks/windocks-sql-server-proxy"
   description: "Docker image name"
   type: string
   required: true
-  label: Image Name
-- variable: imageTag
+  label: Image Name for Sqlproxy
+- variable: image.tag
   default: "latest"
   description: "Docker image tag"
   type: string
   required: true
+  label: Image pull policy for Sqlproxy
+- variable: image.pullPolicy
+  default: "Always"
+  description: "Image pull policy"
+  type: enum
+  required: true
+  options:
+    - "Always"
+    - "IfNotPresent"
   label: Image Tag
 - variable: sqlproxy.windocksServerHostname
   default: ""
@@ -46,6 +55,20 @@ questions:
   type: string
   required: false
   label: Pre-existing Windocks container port
+  group: "Sqlproxy Settings"
+- variable: sqlproxy.port
+  default: "3087"
+  description: "Container port for access to Windocks Sql proxy"
+  type: string
+  label: Windocks SQL proxy port
+  required: true
+  group: "Sqlproxy Settings"
+- variable: sqlproxy.kubeSecretName
+  default: ""
+  description: "Secret; WINDOCKS_REQUIRED_USERNAME='' WINDOCKS_REQUIRED_PASSWORD='' WINDOCKS_REQUIRED_CONTAINER_SAPASSWORD=''"
+  type: string
+  label: Secret for Windocks API user, passwd, and desired SQL sa password
+  required: true
   group: "Sqlproxy Settings"
 - variable: service.port
   default: "3087"
