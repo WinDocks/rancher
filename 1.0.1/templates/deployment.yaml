@@ -27,33 +27,29 @@ spec:
             - name: tcp-proxy
               containerPort: {{ .Values.sqlproxy.port }}
               protocol: TCP
+            - name: tls-proxy
+              containerPort: {{ .Values.sqlproxy.securePort }}
+              protocol: TCP
           envFrom:
           - secretRef:
-              name: {{ .Values.sqlproxy.authSecretName }}
+              name: {{ .Values.sqlproxy.kubeSecretName }}
           env:
+            - name: PROJECT_ID
+              value: mystical-timing-242516
             - name: WINDOCKS_REQUIRED_HOSTNAME
-              value: {{ .Values.sqlproxy.windocksServerHostname | quote }}
+              value: "{{ .Values.sqlproxy.windocksServerHostname }}"
             - name: WINDOCKS_OPTIONAL_PORT
-              value: {{ .Values.sqlproxy.windocksServerPort | quote}}
+              value: "{{ .Values.sqlproxy.windocksServerPort }}"
             - name: WINDOCKS_REQUIRED_IMAGE_NAME
-              value: {{ .Values.sqlproxy.windocksImageName | quote}}
+              value: "{{ .Values.sqlproxy.windocksImageName }}"
             - name: WINDOCKS_SQL_PROXY_OPTIONAL_LISTENING_PORT
-              value: {{ .Values.sqlproxy.port | quote}}
-            - name: WINDOCKS_SQL_PROXY_OPTIONAL_LOCAL_HOSTNAME_FOR_TLS
-              value: {{ .Values.sqlproxy.localHostNameForTls | quote }}
-            - name: WINDOCKS_SQL_PROXY_OPTIONAL_TLS
-              value: {{ .Values.sqlproxy.tls | quote}}
+              value: "{{ .Values.sqlproxy.port }}"
             # - name: WINDOCKS_OPTIONAL_CONTAINER_NAME
-            #  value: {{ .Values.sqlproxy.windocksContainerName }}
+            #  value: "{{ .Values.sqlproxy.windocksContainerName }}"
             # If WINDOCKS_OPTIONAL_PERSISTENT_CONTAINER_PORT is set, then the proxy will not create or delete the Windocks container. 
             # - name: WINDOCKS_OPTIONAL_PERSISTENT_CONTAINER_PORT
-            #  value: {{ .Values.sqlproxy.windocksPersistentContainerPort }}
-          {{- if contains "true" .Values.sqlproxy.tls }}
-          volumeMounts:
-            - mountPath: "/usr/src/app/ssl"
-              name: proxy-secret-ssl
-              readOnly: true
-          {{- end }}
+            #  value: "{{ .Values.sqlproxy.windocksPersistentContainerPort }}"
+            
           #livenessProbe:
             #tcpSocket:
               #port: {{ .Values.sqlproxy.port }}
@@ -63,12 +59,6 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
-        {{- if contains "true" .Values.sqlproxy.tls }}
-        volumes:
-          - name: proxy-secret-ssl
-            secret:
-              secretName: {{ .Values.sqlproxy.sslSecretName }}
-        {{- end }} 
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}

@@ -9,8 +9,8 @@ questions:
   required: true
   label: Image Name for Sqlproxy
 - variable: image.tag
-  default: "1.5.0"
-  description: "Dockerhub image tag"
+  default: "latest"
+  description: "Docker image tag"
   type: string
   required: true
   label: Image pull policy for Sqlproxy
@@ -22,7 +22,7 @@ questions:
   options:
     - "Always"
     - "IfNotPresent"
-  label: Image pull polcy
+  label: Image Tag
 - variable: sqlproxy.windocksServerHostname
   default: ""
   description: "IP or hostname for Windocks server"
@@ -63,33 +63,12 @@ questions:
   label: Windocks SQL proxy port
   required: true
   group: "Sqlproxy Settings"
-- variable: sqlproxy.authSecretName
+- variable: sqlproxy.kubeSecretName
   default: ""
   description: "Secret; WINDOCKS_REQUIRED_USERNAME='' WINDOCKS_REQUIRED_PASSWORD='' WINDOCKS_REQUIRED_CONTAINER_SAPASSWORD=''"
   type: string
   label: Secret for Windocks API user, passwd, and desired SQL sa password
   required: true
-  group: "Sqlproxy Settings"
-- variable: sqlproxy.tls
-  default: "false"
-  description: "Set to true for TLS"
-  type: string
-  label: TLS connection
-  required: false
-  group: "Sqlproxy Settings"
-- variable: sqlproxy.sslSecretName
-  default: ""
-  description: "Secret - in a file with tls.key:... and tls.crt:......"
-  type: string
-  label: Secret for ssl cert and key (files)
-  required: false
-  group: "Sqlproxy Settings"
-- variable: sqlproxy.localHostNameForTls
-  default: ""
-  description: "For TLS connections, hostname for the sql proxy"
-  type: string
-  label: For TLS connections, hostname for sql proxy service
-  required: false
   group: "Sqlproxy Settings"
 - variable: service.port
   default: "3087"

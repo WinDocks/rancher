@@ -15,6 +15,10 @@ spec:
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: tcp
+    - port: {{ .Values.service.securePort }}
+      targetPort: {{ .Values.service.targetSecurePort }}
+      protocol: TCP
+      name: tls
   selector:
     app: {{ template "windocks-sql-proxy.name" . }}
     release: {{ .Release.Name }}
