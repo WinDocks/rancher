@@ -24,7 +24,7 @@ questions:
     - "IfNotPresent"
   label: Image pull polcy
 - variable: sqlproxy.windocksServerHostname
-  default: ""
+  default: "34.220.44.23"
   description: "IP or hostname for Windocks server"
   type: string
   required: true
@@ -38,7 +38,7 @@ questions:
   label: Windocks port
   group: "Sqlproxy Settings"
 - variable: sqlproxy.windocksImageName
-  default: ""
+  default: "clone"
   description: "Windocks image name from which Sqlproxy creates SQL Server containers and database clones"
   type: string
   required: true
@@ -71,7 +71,7 @@ questions:
   required: true
   group: "Sqlproxy Settings"
 - variable: sqlproxy.tls
-  default: "false"
+  default: ""
   description: "Set to true for TLS"
   type: string
   label: TLS connection

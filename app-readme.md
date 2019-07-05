@@ -13,11 +13,11 @@ Pre-requisites
 
 Steps
 
-1. Enter the values for proxy image name/tag and  environment variables (Windocks host ip, Windocks server port, etc. )
+1. Enter the values for proxy image name/tag and  environment variables (Windocks host ip, Windocks server port, etc. ). Use the default values where provided
 
 2. Create the auth secret: create secret generic proxy-secrets --from-literal=WINDOCKS_REQUIRED_USERNAME='windocks-api-username' --from-literal=WINDOCKS_REQUIRED_PASSWORD='windocks-api-password' --from-literal=WINDOCKS_REQUIRED_CONTAINER_SAPASSWORD='sa-password-to-set-for-windocks-container'
 
-3. For TLS: Create a secret in a file with tls.key and tls.crt, both of which are mounted as files into the container
+3. For TLS: Create a secret in a file with tls.key and tls.crt, both of which are mounted as files into the container. Separate coniguration is required on the Windocks server
 
 4. Deploy the app and use SQL Server Management Studio or Azure Management Studio to connect to the <Windocks=host-IP>,3087 using SQL auth: sa and the password above
 
