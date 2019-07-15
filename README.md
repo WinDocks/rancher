@@ -1,4 +1,4 @@
-Windocks SQL proxy
+# Windocks SQL proxy
 
 The Windocks SQL proxy delivers Windows SQL Server containers with database clones to a cluster. 
 - Creates a Windows SQL Server container on a designated external machine that already has Windocks installed (A demo Windocks server is available at the IP address in the values)
@@ -7,11 +7,11 @@ The Windocks SQL proxy delivers Windows SQL Server containers with database clon
 - Enables the client applications to work on the cloned databases (usually production database clones) 
 - Deletes the Windocks SQL Server container when the SQL proxy pod / container is deleted
 
-Pre-requisites
+## Pre-requisites
 1. Windocks installed on a machine accessible to the cluster  (A demo machine is provided for you on the IP address)
 2. For TLS connections, the required TLS setup on the Windocks machine and an SSL certificate and key for the proxy
 
-Steps
+## Steps
 
 1. Use the default values for proxy image name/tag and environment variables (Windocks host ip, Windocks server port, etc. ). 
 
@@ -23,12 +23,12 @@ Steps
 
 Email support@windocks.com for issues
 
-Instructions for your own external W1ndocks machine
+## Instructions for your own external Windocks machine
 
-Download a free Windocks community edition from http://www.windocks.com
+Download a free Windocks community edition from [Windocks.com](http://www.windocks.com)
 
 
-PRE-INSTALL CHECKLIST
+### PRE-INSTALL CHECKLIST
 1. Windows 8.1, 10, Pro or Enterprise editions, or Windows Server 2012 R2 or 2016. 
 2. SQL Server Standard, Enterprise, Developer or Express: 2008, R2, 2012, 2014, 2016 or 2017 
 3. SQL Server already installed? WIndocks will use it. Don’t use that SQL for anything else. Or
@@ -37,25 +37,25 @@ install another instance of SQL & edit node.conf to use the fresh SQL (see below
 else. Login with the same BUILTIN admin account, install SQL first, then WIndocks 
 5. Report Server (SSRS) must be installed in native mode for SSRS containers.
 
-INSTALL
+### INSTALL
 After SQL Server is installed, login with a Builtin Administrator account & run the Windocks
 installer. Reboot the server after a fresh install.
 
-VERIFY INSTALL
+### VERIFY INSTALL
 1. Copy the license key to a file named key.txt and save key.txt in the Windocks folder. The
 machine must have Internet access to validate the license.
 2. Open a Windows command prompt and create a Sql Server container as below:
 docker create mssql-20xx (Replace xx with your sql version - 08, 08r2, 12, 14, 16, 17)
 
-POST INSTALL
+### POST INSTALL
 1. For the web app, open ports 3000,3001, & 5985, 5986 (PowerShell remote)
 2. The installer configures SQL and SSRS instance names automatically. Verify in
 Windocks\config\node.conf Restart the Windocks service following any changes.
 
-WINDOCKS\CONFIG\NODE.CONF (Example below is SQL Server 2014)
-Get YourSqlInstanceName from services.msc, the SQL instance name is in (parenthesis)
+### windocks\config\node.conf (Example below is SQL Server 2014)
 
-MSSQL_2014_INSTANCE_NAME=“YourSqlInstanceName”
+<i>#</i>Get YourSqlInstanceName from services.msc, the SQL instance name is in (parenthesis)
+MSSQL_2014_INSTANCE_NAME=“YourSqlInstanceName”  
 MSRS_2014_INSTANCE_NAME=“YourSqlInstanceName”
 
 BUILD IMAGES AND SQL CONTAINERS WITH DATABASE CLONES ( see windocks\samples)
@@ -115,6 +115,7 @@ support@windocks.com for the administrator password. Not available in Community 
 ADVANCED CONFIGURATION
 
 windocks\config\nodeAllOptions.conf. Copy line(s) to node.conf and restart Windocks service
+
 sa passwords are not shown, encrypted, or shown in plain text, with 0, 1, 2 respectively
 
 SHOW_SA_PASSWORD=“1”
