@@ -54,88 +54,144 @@ Windocks\config\node.conf Restart the Windocks service following any changes.
 
 WINDOCKS\CONFIG\NODE.CONF (Example below is SQL Server 2014)
 Get YourSqlInstanceName from services.msc, the SQL instance name is in (parenthesis)
+
 MSSQL_2014_INSTANCE_NAME=“YourSqlInstanceName”
 MSRS_2014_INSTANCE_NAME=“YourSqlInstanceName”
 
 BUILD IMAGES AND SQL CONTAINERS WITH DATABASE CLONES ( see windocks\samples)
 Use a command prompt to create and start a base SQL Server container: 
 >docker images -- displays the list of SQL images available
+
 >docker create mssql-2014 — use the image name from the images command
+
 >docker ps — Verify the container was created, note the ContainerID and port
+
 >docker start <ContainerID> -- use 2-3 unique digits of Containerid
+
 >docker rm <containerID> -- stops and deletes the container
+
 Open Windocks\samples\testFastCloneFromFullBackup\dockerfile  
 
 Set the SQL image to be used here. Example is for SQL 2014:
+
 FROM mssql-2014
-The source of data for cloning is a full backup. Striped, Diff are supported see samples
+
+The source of data for cloning is a full backup. Diff is supported see samples
+
 SETUPCLONING FULL customers C:\windocks\dbbackups\customerdatafull.bak
+
 Windocks copies the data masking script to the image & runs it to prepare the image
+
 COPY cleanseData.sql .
+
 RUN cleanseData.sql
 
 Build an image named full1 & create a SQL Server container that includes the cloned DB.
+
 >docker build -t full1 C:\Windocks\samples\testFastCloneFromFullBackup
+
 >docker images — Verify the image full1 is built
+
 >docker create full1 — Create a container from full1, note the containerId and port
+
 >docker start <containerid> — Start the container with 2-3 unique digits of ContainerID
-Open SQL Management Studio, use the loopback address followed by a comma and port:
-127.0.0.1,10001. Verify the presence of the customers database.
+
+Open SQL Management Studio, use the loopback address followed by a comma and port 127.0.0.1,10001. Verify the presence of the customers database.
+
 >docker rmi full1 — Deletes image full1 (Delete associated containers first for clone images)
 
 WINDOCKS WEB APPLICATION
+
 The web app supports build images, create, start, and stop containers with data, and delivery
 of database clones to SQL instances and MS SQL containers. On the Windocks machine, browse
 to 127.0.0.1 (or localhost) in Chrome or Firefox. Enter 127.0.0.1 in the IP address box & Get.
 On remote machines use the Windocks machine IP address instead of 127.0.0.1.
 
 AUTHENTICATION
+
 Open inetpub\wwroot\registerreset.html in Chrome/Firefox to create users. Email
 support@windocks.com for the administrator password. Not available in Community edition.
 
 ADVANCED CONFIGURATION
+
 windocks\config\nodeAllOptions.conf. Copy line(s) to node.conf and restart Windocks service
 sa passwords are not shown, encrypted, or shown in plain text, with 0, 1, 2 respectively
+
 SHOW_SA_PASSWORD=“1”
+
 Container storage, default is SystemDrive:\Windocks\containers. Ensure the path exists
+
 CONTAINER_BASE_DIR=“D:\containers”
+
 Assign ports to containers beginning with this port
+
 STARTING_PORT=10001
+
 Don’t copy user databases in the default SQL instance to containers (1: copy)
+
 COPY_DEFAULT_INSTANCE_DATABASES=0
+
 Only SQL containers and SQL scripts allowed using “1”, or all containers and EXEs =”0”
+
 DB_SANDBOX=“1"
+
 User permissions for access to cloned databases in the file share: \Windocks\data
+
 CLONE_USERS_PERMITTED=“domain\user1, domain\user2, Everyone”
+
 SSRS containers run as the account (needs Logon as a Service). See Encrypted Passwords
+
 REPORTING_SERVICE_LOGIN=“MACHINE\account”
+
 REPORTING_SERVICE_PASSWORD=“EncryptedPassword”
+
 
 
 ENCRYPTED PASSWORDS (SECRETS)
+
 >c:\windocks\bin\encrypt.exe — Enter the password you want to encrypt
+
 Result encrypted password is in “encrypted.txt”. Copy/paste to node.conf
+
 >c:\windocks\bin\decrypt.exe — Enter the encrypted password, see the decrypted result
+
 sa passwords are not shown, encrypted, or shown in plain text, with 0, 1, 2 respectively
 SHOW_SA_PASSWORD=“1”
+
 Container storage, default is SystemDrive:\Windocks\containers. Ensure the path exists
+
 CONTAINER_BASE_DIR=“D:\containers”
+
 Assign ports to containers beginning with this port
+
 STARTING_PORT=10001
+
 Don’t copy user databases in the default SQL instance to containers (1: copy)
+
 COPY_DEFAULT_INSTANCE_DATABASES=0
+
 Only SQL containers and SQL scripts allowed using “1”, or all containers and EXEs =”0”
+
 DB_SANDBOX=“1"
+
 User permissions for access to cloned databases in the file share: \Windocks\data
+
 CLONE_USERS_PERMITTED=“domain\user1, domain\user2, Everyone”
+
 SSRS containers run as the account (needs Logon as a Service). See Encrypted Passwords
+
 REPORTING_SERVICE_LOGIN=“MACHINE\account”
+
 REPORTING_SERVICE_PASSWORD=“EncryptedPassword”
+
 Logins for SSRS containers require Logon as a Service permissions, set in Local Security
 Policy, User Policies, User Rights Assignment.
+
+
 T-SQL SCRIPT FORMAT
 Use T-SQL scripts with a single statement per SQL command, & a semi-colon at the end of
 each SQL command. Details at https://windocks.com/files/windocks-scripting-sql-PDF.pdf
+
 
 UNINSTALL WINDOCKS
 1. Stop and remove all containers >docker rm <containerid>
@@ -144,8 +200,11 @@ UNINSTALL WINDOCKS
 4. Open Administrative command prompt, and delete the services >sc delete windocks
 5. Using File Explorer delete the Windocks directory
 
+
 ADDITIONAL RESOURCES
 See https://windocks.com/lps/resources
+
+
 TROUBLESHOOTING
 1. docker create or docker build SQL issues ? See the error message from server
 • SQL Server default instance is running? Stop it in Services & set to Manual.
