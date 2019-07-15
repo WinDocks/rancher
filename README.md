@@ -52,14 +52,13 @@ docker create mssql-20xx (Replace xx with your sql version - 08, 08r2, 12, 14, 1
 2. The installer configures SQL and SSRS instance names automatically. Verify in
 Windocks\config\node.conf Restart the Windocks service following any changes.
 
-### windocks\config\node.conf (Example below is SQL Server 2014)
-
+### windocks\config\node.conf (Example below is SQL Server 2014)  
 <i>#</i>Get YourSqlInstanceName from services.msc, the SQL instance name is in (parenthesis)
 MSSQL_2014_INSTANCE_NAME=“YourSqlInstanceName”  
 MSRS_2014_INSTANCE_NAME=“YourSqlInstanceName”
 
-BUILD IMAGES AND SQL CONTAINERS WITH DATABASE CLONES ( see windocks\samples)
-Use a command prompt to create and start a base SQL Server container: 
+### BUILD IMAGES AND SQL CONTAINERS WITH DATABASE CLONES (see windocks\samples)  
+Use a command prompt to create and start a base SQL Server container:  
 >docker images -- displays the list of SQL images available
 
 >docker create mssql-2014 — use the image name from the images command
@@ -70,23 +69,18 @@ Use a command prompt to create and start a base SQL Server container:
 
 >docker rm <containerID> -- stops and deletes the container
 
-Open Windocks\samples\testFastCloneFromFullBackup\dockerfile  
 
-Set the SQL image to be used here. Example is for SQL 2014:
+#### Windocks\samples\testFastCloneFromFullBackup\dockerfile  
+<i>#</i> Set the SQL image to be used here. Example is for SQL 2014:  
+FROM mssql-2014  
+<i>#</i> The source of data for cloning is a full backup. Diff is supported see samples  
+SETUPCLONING FULL customers C:\windocks\dbbackups\customerdatafull.bak  
+<i>#</i> Windocks copies the data masking script to the image & runs it to prepare the image  
+COPY cleanseData.sql .  
+RUN cleanseData.sql  
 
-FROM mssql-2014
 
-The source of data for cloning is a full backup. Diff is supported see samples
-
-SETUPCLONING FULL customers C:\windocks\dbbackups\customerdatafull.bak
-
-Windocks copies the data masking script to the image & runs it to prepare the image
-
-COPY cleanseData.sql .
-
-RUN cleanseData.sql
-
-Build an image named full1 & create a SQL Server container that includes the cloned DB.
+Build an image named full1 & create a SQL Server container that includes the cloned DB.  
 
 >docker build -t full1 C:\Windocks\samples\testFastCloneFromFullBackup
 
@@ -100,101 +94,64 @@ Open SQL Management Studio, use the loopback address followed by a comma and por
 
 >docker rmi full1 — Deletes image full1 (Delete associated containers first for clone images)
 
-WINDOCKS WEB APPLICATION
 
+### WINDOCKS WEB APPLICATION  
 The web app supports build images, create, start, and stop containers with data, and delivery
 of database clones to SQL instances and MS SQL containers. On the Windocks machine, browse
 to 127.0.0.1 (or localhost) in Chrome or Firefox. Enter 127.0.0.1 in the IP address box & Get.
 On remote machines use the Windocks machine IP address instead of 127.0.0.1.
 
-AUTHENTICATION
 
+### AUTHENTICATION  
 Open inetpub\wwroot\registerreset.html in Chrome/Firefox to create users. Email
 support@windocks.com for the administrator password. Not available in Community edition.
 
-ADVANCED CONFIGURATION
 
-windocks\config\nodeAllOptions.conf. Copy line(s) to node.conf and restart Windocks service
+### ADVANCED CONFIGURATION  
 
-sa passwords are not shown, encrypted, or shown in plain text, with 0, 1, 2 respectively
+#### windocks\config\nodeAllOptions.conf. Copy line(s) to node.conf and restart Windocks service  
 
-SHOW_SA_PASSWORD=“1”
+<i>#</i> sa passwords are not shown, encrypted, or shown in plain text, with 0, 1, 2 respectively  
+SHOW_SA_PASSWORD=“1”  
+<i>#</i> Container storage, default is SystemDrive:\Windocks\containers. Ensure the path exists  
+CONTAINER_BASE_DIR=“D:\containers”  
+<i>#</i> Assign ports to containers beginning with this port  
+STARTING_PORT=10001  
 
-Container storage, default is SystemDrive:\Windocks\containers. Ensure the path exists
+<i>#</i> Don’t copy user databases in the default SQL instance to containers (1: copy)  
+COPY_DEFAULT_INSTANCE_DATABASES=0  
 
-CONTAINER_BASE_DIR=“D:\containers”
+<i>#</i> Only SQL containers and SQL scripts allowed using “1”, or all containers and EXEs =”0”  
+DB_SANDBOX=“1"  
 
-Assign ports to containers beginning with this port
-
-STARTING_PORT=10001
-
-Don’t copy user databases in the default SQL instance to containers (1: copy)
-
-COPY_DEFAULT_INSTANCE_DATABASES=0
-
-Only SQL containers and SQL scripts allowed using “1”, or all containers and EXEs =”0”
-
-DB_SANDBOX=“1"
-
-User permissions for access to cloned databases in the file share: \Windocks\data
-
-CLONE_USERS_PERMITTED=“domain\user1, domain\user2, Everyone”
-
-SSRS containers run as the account (needs Logon as a Service). See Encrypted Passwords
-
-REPORTING_SERVICE_LOGIN=“MACHINE\account”
-
-REPORTING_SERVICE_PASSWORD=“EncryptedPassword”
-
-
-
-ENCRYPTED PASSWORDS (SECRETS)
-
->c:\windocks\bin\encrypt.exe — Enter the password you want to encrypt
-
-Result encrypted password is in “encrypted.txt”. Copy/paste to node.conf
-
->c:\windocks\bin\decrypt.exe — Enter the encrypted password, see the decrypted result
-
-sa passwords are not shown, encrypted, or shown in plain text, with 0, 1, 2 respectively
-SHOW_SA_PASSWORD=“1”
-
-Container storage, default is SystemDrive:\Windocks\containers. Ensure the path exists
-
-CONTAINER_BASE_DIR=“D:\containers”
-
-Assign ports to containers beginning with this port
-
-STARTING_PORT=10001
-
-Don’t copy user databases in the default SQL instance to containers (1: copy)
-
-COPY_DEFAULT_INSTANCE_DATABASES=0
-
-Only SQL containers and SQL scripts allowed using “1”, or all containers and EXEs =”0”
-
-DB_SANDBOX=“1"
-
-User permissions for access to cloned databases in the file share: \Windocks\data
-
-CLONE_USERS_PERMITTED=“domain\user1, domain\user2, Everyone”
-
-SSRS containers run as the account (needs Logon as a Service). See Encrypted Passwords
-
-REPORTING_SERVICE_LOGIN=“MACHINE\account”
-
-REPORTING_SERVICE_PASSWORD=“EncryptedPassword”
+<i>#</i> User permissions for access to cloned databases in the file share: \Windocks\data  
+CLONE_USERS_PERMITTED=“domain\user1, domain\user2, Everyone”  
 
 Logins for SSRS containers require Logon as a Service permissions, set in Local Security
+Policy, User Policies, User Rights Assignment.SSRS containers run as the account (needs Logon as a Service). See Encrypted Passwords  
+REPORTING_SERVICE_LOGIN=“MACHINE\account”  
+REPORTING_SERVICE_PASSWORD=“EncryptedPassword”  
+
+<i>#</i> Logins for SSRS containers require Logon as a Service permissions, set in Local Security
 Policy, User Policies, User Rights Assignment.
 
 
-T-SQL SCRIPT FORMAT
+### ENCRYPTED PASSWORDS (SECRETS)  
+
+>c:\windocks\bin\encrypt.exe — Enter the password you want to encrypt  
+
+Result encrypted password is in “encrypted.txt”. Copy/paste to node.conf  
+
+>c:\windocks\bin\decrypt.exe — Enter the encrypted password, see the decrypted result  
+
+
+
+### T-SQL SCRIPT FORMAT  
 Use T-SQL scripts with a single statement per SQL command, & a semi-colon at the end of
 each SQL command. Details at https://windocks.com/files/windocks-scripting-sql-PDF.pdf
 
 
-UNINSTALL WINDOCKS
+### UNINSTALL WINDOCKS  
 1. Stop and remove all containers >docker rm <containerid>
 2. Close open dockerfiles or other processes using Windocks
 3. Open services.msc, right-click and stop Windocks Services
@@ -202,11 +159,11 @@ UNINSTALL WINDOCKS
 5. Using File Explorer delete the Windocks directory
 
 
-ADDITIONAL RESOURCES
+### ADDITIONAL RESOURCES  
 See https://windocks.com/lps/resources
 
 
-TROUBLESHOOTING
+### TROUBLESHOOTING  
 1. docker create or docker build SQL issues ? See the error message from server
 • SQL Server default instance is running? Stop it in Services & set to Manual.
 • SQL Server instance name? Edit Windocks\config\node.conf, enter instance name - get
@@ -233,5 +190,5 @@ standardize on lower-case image names.
 7. When using Windocks to serve database clones, avoid unplanned reboots or system restarts,
 which can result in database clones being put into a “recovery pending” state.
 
-TECHNICAL SUPPORT
+### TECHNICAL SUPPORT  
 Email support@windocks.com with a copy of Windocks\log\platform.log for help.
